@@ -60,5 +60,16 @@ def parallel_2_consumers():
     c2.join()
 
 
+def test():
+    p1 = Process(target=run_producer, args=(0, 1000, prod1))
+    c1 = Process(target=run_consumer, args=("#1 Consumer", cons1))
+
+    prod1.free_db()
+
+    p1.start()
+    c1.start()
+    p1.join()
+    c1.join()
+
 if __name__ == '__main__':
     parallel_2_consumers()

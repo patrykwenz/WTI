@@ -43,13 +43,3 @@ class Client(object):
     def get_items(self, start, stop):
         return self.client.lrange(self.q_key, 0, -1)
 
-#
-# if __name__ == '__main__':
-#     producer = Client(0)
-#     for i in range(42, 100):
-#         producer.put(json.dumps({str(i): str(chr(i))}))
-#     # producer.cut_list(0, 10)
-#
-#     # producer.show_queue()
-#     items = producer.get_items(0,-1)
-#     print(items)
