@@ -71,5 +71,6 @@ def test():
     p1.join()
     c1.join()
 
+
 if __name__ == '__main__':
     parallel_2_consumers()
