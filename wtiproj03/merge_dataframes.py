@@ -8,14 +8,17 @@ df2 = pd.read_csv("/home/patryk/PycharmProjects/WTI/resources/movie_genres.txt",
 pd.set_option('expand_frame_repr', False)
 
 t = pd.merge(df1, df2, on='movieID')
+
+
 # print(t[t['userID'].isin([75])])
 
 #
 # filterinfDataframe = t[(t['userID'] == 75) & (t['movieID'] == 45722)]
 # print(filterinfDataframe)
 df_new = df2.groupby('movieID')['genre'].apply(list).reset_index(name='genre')
-rpt = pd.merge(df1, df_new, on='movieID')
 
+rpt = pd.merge(df1, df_new, on='movieID')
+print(rpt)
 
 # filterinfDataframe = rpt[(rpt['userID'] == 75) & (rpt['movieID'] == 45722)]
 # print(filterinfDataframe)
