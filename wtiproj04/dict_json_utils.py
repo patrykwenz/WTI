@@ -1,5 +1,13 @@
 import pandas as pd
 import numpy as np
+import warnings
+
+
+def warn(*args, **kwargs):
+    pass
+
+
+warnings.warn = warn
 
 
 def merge_data_frames(nrows):
@@ -38,7 +46,12 @@ def get_avg_genre_rating(merged_table, genres_cols, difference=True):
 
     other_cols_values = merged_table.drop(genres_cols, axis=1)
     rating_to_genre = ratings_reshaped * movie_genres_cols_values
+
+    rating_to_genre[rating_to_genre == 0] = np.nan
     avg_genres_ratings = np.nanmean(rating_to_genre, axis=0)
+
+    avg_genres_ratings[np.isnan(avg_genres_ratings)] = 0
+    rating_to_genre[np.isnan(rating_to_genre)] = 0
 
     if difference:
         avg_matrix = avg_genres_ratings.reshape(1, -1)
@@ -54,7 +67,10 @@ def get_avg_genre_rating(merged_table, genres_cols, difference=True):
 def get_single_user_ratings(merged_table, genres_cols, id):
     non_diff_ratings, avg_genres_ratings = get_avg_genre_rating(merged_table, genres_cols, difference=False)
     user_ratings = non_diff_ratings.where(non_diff_ratings["userID"] == id)
+
+    user_ratings[user_ratings == 0] = np.NaN
     avg_single_user_ratings = np.nanmean(user_ratings[genres_cols].values, axis=0)
+    avg_single_user_ratings[np.isnan(avg_single_user_ratings)] = 0
 
     return avg_single_user_ratings
 
@@ -65,19 +81,3 @@ def get_user_profile(merged_table, genres_cols, id):
     user_profile = avg_single_user_ratings - avg_ratings
 
     return user_profile
-
-
-if __name__ == '__main__':
-    m, g = merge_data_frames(nrows=100000)
-    # id = 75
-    # f = get_single_user_ratings(m, g, id)
-    #
-    # print("userID:", id)
-    # for x,y in zip(g, f):
-    #     print(f"{x}: {y}")
-    # print(get_user_profile(m, g, 75))
-
-    df, avg = get_avg_genre_rating(m, g)
-
-    print(df)
-    print(avg)

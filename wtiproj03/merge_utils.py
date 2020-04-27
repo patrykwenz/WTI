@@ -17,7 +17,7 @@ merged_table = pd.merge(df1, df2, on='movieID')
 
 def get_json_rows():
     to_return = list()
-    for jdict in merged_table.to_dict(orient='records')[0:150]:
+    for jdict in merged_table.to_dict(orient='records')[0:1000]:
         to_return.append(jdict)
     return to_return
 

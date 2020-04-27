@@ -1,6 +1,6 @@
 import requests
 import time
-
+from wtiproj03.merge_utils import get_json_rows
 
 def GET_DELETE_info(request, info):
     print(f"########  {info} ########")
@@ -24,70 +24,67 @@ def POST_info(request):
 
     print("################################\n")
 
-
+import matplotlib.patches as mpatches
+import matplotlib.pyplot as plt
 def test():
     IP = "http://127.0.0.1:5000/"
-    DUMMY_ID = "78"
-    DUMMY_DATA = {"userID": 78, "movieID": 903, "rating": 4.0, "genre-Action": 0, "genre-Adventure": 0,
-                  "genre-Animation": 0,
-                  "genre-Children": 0, "genre-Comedy": 0, "genre-Crime": 0, "genre-Documentary": 0, "genre-Drama": 1,
-                  "genre-Fantasy": 0, "genre-Film-Noir": 0, "genre-Horror": 0, "genre-IMAX": 0, "genre-Musical": 0,
-                  "genre-Mystery": 1, "genre-Romance": 1, "genre-Sci-Fi": 0, "genre-Short": 0, "genre-Thriller": 1,
-                  "genre-War":
-                      0, "genre-Western": 0}
+    IP2 ="http://127.0.0.1:9898/"
 
-    # POST /RATING
-    request = requests.post(IP + "rating", json=DUMMY_DATA)
-    POST_info(request)
+    SCORES = dict()
+    SCORES["flask"] = list()
+    SCORES["cherry"] = list()
+
+    rows = get_json_rows()
+    for row in rows:
+        request = requests.post(IP + "rating", json=row)
+        SCORES["flask"].append(request.elapsed.total_seconds())
+
+    for row in rows:
+        request = requests.post(IP2 + "rating", json=row)
+        SCORES["cherry"].append(request.elapsed.total_seconds())
+
+
+    plt.plot(SCORES["flask"],color=(0,1,0), label="flask")
+    plt.plot(SCORES["cherry"],color=(1,0,0), label="cherry")
+
+    red_patch = mpatches.Patch(color='red', label='cherrypy')
+    green_patch = mpatches.Patch(color='green', label='flask')
+    plt.legend(handles=[red_patch, green_patch])
+    plt.show()
 
     # GET /RATINGS
-    request = requests.get(IP + "ratings")
-    GET_DELETE_info(request, "GET")
+    # request = requests.get(IP + "ratings")
+    # GET_DELETE_info(request, "GET")
 
-    # GET /avg-genre-ratings/all-users
-    request = requests.get(IP + "avg-genre-ratings/all-users")
-    GET_DELETE_info(request, "GET")
-
-    # GET /avg-genre-ratings/all-users
-    request = requests.get(IP + "avg-genre-ratings/" + "75")
-    GET_DELETE_info(request, "GET")
-
-    # DELETE /RATINGS
-    request = requests.delete(IP + "ratings")
-    GET_DELETE_info(request, "DELETE")
-
-
-import multiprocessing
-import time
-
-
-def TEST_GET_ON_N_THREADS(n):
-    proc = []
-    s = time.time()
-    for _ in range(n):
-        p = multiprocessing.Process(target=test)
-        p.start()
-        proc.append(p)
-
-    for p in proc:
-        p.join()
-
-    end = time.time() - s
-    return end
+# POST /RATING
+    # request = requests.post(IP + "rating", json=DUMMY_DATA)
+    # POST_info(request)
+    #
+    # # GET /RATINGS
+    # request = requests.get(IP + "ratings")
+    # GET_DELETE_info(request, "GET")
+    #
+    # # GET /avg-genre-ratings/all-users
+    # request = requests.get(IP + "avg-genre-ratings/all-users")
+    # GET_DELETE_info(request, "GET")
+    #
+    # # GET /avg-genre-ratings/all-users
+    # request = requests.get(IP + "avg-genre-ratings/" + "75")
+    # GET_DELETE_info(request, "GET")
+    #
+    # # DELETE /RATINGS
+    # request = requests.delete(IP + "ratings")
+    # GET_DELETE_info(request, "DELETE")
 
 
+# DUMMY_ID = "78"
+#     DUMMY_DATA = {"userID": 78, "movieID": 903, "rating": 4.0, "genre-Action": 0, "genre-Adventure": 0,
+#                   "genre-Animation": 0,
+#                   "genre-Children": 0, "genre-Comedy": 0, "genre-Crime": 0, "genre-Documentary": 0, "genre-Drama": 1,
+#                   "genre-Fantasy": 0, "genre-Film-Noir": 0, "genre-Horror": 0, "genre-IMAX": 0, "genre-Musical": 0,
+#                   "genre-Mystery": 1, "genre-Romance": 1, "genre-Sci-Fi": 0, "genre-Short": 0, "genre-Thriller": 1,
+#                   "genre-War":
+#                       0, "genre-Western": 0}
 if __name__ == '__main__':
 
     test()
-    # tab = []
-    # for i in range(100, 1001, 100):
-    #     s = time.time()
-    #     for _ in range(0, i):
-    #         test()
-    #     end = time.time() - s
-    #     tab.append(end)
-    #
-    # print(tab)
-    # with open("t.txt", "w") as file:
-    #     for t in tab:
-    #         file.write(str(t) + "\n")
